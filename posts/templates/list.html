@@ -1,0 +1,46 @@
+
+{% extends 'base.html' %}
+
+{% block container %}
+    <script src="/static/js/posts.js"></script> <!-- 자바스크립트 경로-->
+
+    <div class="container">
+        <h1>Bulletin Board System(BBS)</h1>
+        <button class="btn btn-primary"
+                onclick="new_post()">새 글 작성</button> <!--버튼 누르면 자바스크립트 호출-->
+        <div class="m-1"></div>
+
+        <!-- 테이블 -->
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">작성자</th>
+                    <th scope="col">내용</th>
+                    <th scope="col">수정</th>
+                    <th scope="col">삭제</th>
+               </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr>
+                    <th scope="row">{{ post.id }}</th>
+                    <td>{{ post.author }}</td>
+                    <td>{{ post.contents }}</td>
+                    <td>
+                        <a href="{% url 'posts:update' post.id %}" class="btn btn-warning">수정</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'posts:delete' post.id %}" class="btn btn-danger">삭제</a>
+
+                        <!-- 앵커 잡고 클래스 지정하여 부트스트랩 이용하면 빨간 버튼으로 변경-->
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
+
+{% endblock %}
