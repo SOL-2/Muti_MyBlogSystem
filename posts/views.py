@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from posts.models import Post
-from posts.forms import PostForm
+from posts.models import Post,Comment
+from posts.forms import PostForm, CommentForm
+
 
 
 def p_list(request):
-    my_list = Post.objects.all().order_by('-id')
+    my_list = Post.objects.all().order_by('-posted_date')
     context = {'posts': my_list}
     return render(request, 'list.html', context)
+
+
+
+
 
 
 def p_create(request):
@@ -44,8 +49,9 @@ def p_update(request, post_id):
         post_form = PostForm(request.POST, instance=post)
         # 사용자가 입력한 데이터가 다 들어있음.
         # instance = post 에 pk(id)도 들어있음.
-        # 때문에 아래 save()에서 새로 저장하는 것이 아니라 수정이 되는 것것
-       if post_form.is_valid(): # 입력한 데이터에 문제가 없다면
+        # 때문에 아래 save()에서 새로 저장하는 것이 아니라 수정이 되는 것
+
+        if post_form.is_valid(): # 입력한 데이터에 문제가 없다면
             post_form.save() # 포스트 폼에 저장한다
             return redirect('posts:list')
             # 네임스페이스가 posts이고 urlpattern에서 name이 list인
@@ -59,3 +65,43 @@ def p_update(request, post_id):
         # 수정 시 빈 칸이 아니라 instance에 post 데이터를 가져오는 칸을 만들어줌
 
     return render(request, 'create.html', {'post_form': post_form})
+
+
+
+
+def p_detail(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+
+    if request.method == 'POST':
+        post_form = PostForm(request.POST, instance=post)
+        # 사용자가 입력한 데이터가 다 들어있음.
+        # instance = post 에 pk(id)도 들어있음.
+        # 때문에 아래 save()에서 새로 저장하는 것이 아니라 수정이 되는 것
+
+        # if post_form.is_valid(): # 입력한 데이터에 문제가 없다면
+        #     post_form.save() # 포스트 폼에 저장한다
+        #     return redirect('posts:list')
+            # 네임스페이스가 posts이고 urlpattern에서 name이 list인
+            # url로 리다이렉션
+
+    else:
+        post_form = PostForm(instance=post)
+        for i in post_form.fields: # 수정이 되지 않도록 처리
+            post_form.fields[i].disabled = True
+
+
+    return render(request, 'detail.html', {'post_form': post_form})
+
+
+def p_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.save()
+            return redirect('posts:detail', pk=pk)
+    else:
+        form = CommentForm()
+    return render(request, 'p_comment.html', {'form': form})

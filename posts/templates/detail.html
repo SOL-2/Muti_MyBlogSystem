@@ -1,0 +1,29 @@
+
+{% extends 'base.html' %}
+{% load bootstrap4 %} <!-- 부트스트랩 쓰기위해 load -->
+
+{% block container %}
+    <div class="container">
+        <h1>게시판 보기</h1>
+
+        <form action="{% url 'posts:list' %}" method="GET">
+            {% csrf_token %}
+            <!-- {{ post_form }} 그냥 쓰면 부트스트랩 적용이 안됨 -->
+            {% bootstrap_form post_form %} <!-- 부트스트랩 적용! -->
+            <button type="submit" class="btn btn-primary">뒤로가기</button>
+
+        </form>
+    </div>
+<hr>
+<a class="btn btn-default" href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
+{% for comment in post.comments.all %}
+    <div class="comment">
+        <div class="date">{{ comment.created_date }}</div>
+        <strong>{{ comment.author }}</strong>
+        <p>{{ comment.text|linebreaks }}</p>
+    </div>
+{% empty %}
+    <p>댓글이 없어용 :(</p>
+{% endfor %}
+
+{% endblock %}
