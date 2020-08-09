@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect,reverse
 from posts.models import Post,Comment
 from posts.forms import PostForm, CommentForm
 
@@ -90,10 +90,11 @@ def p_detail(request, post_id):
             post_form.fields[i].disabled = True
 
 
-    return render(request, 'detail.html', {'post_form': post_form})
+    return render(request, 'detail.html', {'post_form': post_form, 'post': post})
 
 
 def p_comment(request, pk):
+    print("pComment 들어왔다")
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
         form = CommentForm(request.POST)
@@ -101,7 +102,25 @@ def p_comment(request, pk):
             comment = form.save(commit=False)
             comment.post = post
             comment.save()
-            return redirect('posts:detail', pk=pk)
+            return redirect('posts:detail', pk=post.pk)
     else:
         form = CommentForm()
+
+    print("pComment 그린다 ")
     return render(request, 'p_comment.html', {'form': form})
+
+
+
+# def p_send_comment(request, comment_post):
+#     print("댓글아 쌓여")
+#     comment = get_object_or_404(Post, comment_post)
+#     if request.method == 'POST':
+#         comment_form = CommentForm(request.POST, instance=Post)
+#         if comment_form.is_valid():
+#             print('댓글아 쌓여2')
+#             comment = comment_form.save(commit=False)
+#             comment.post = comment
+#             comment.save()
+#             return HttpResponseRedirect(reverse('posts:detail', args=(comment.post,)))
+#
+#
