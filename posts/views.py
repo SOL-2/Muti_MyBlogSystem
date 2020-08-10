@@ -88,26 +88,37 @@ def p_detail(request, post_id):
         post_form = PostForm(instance=post)
         for i in post_form.fields: # 수정이 되지 않도록 처리
             post_form.fields[i].disabled = True
+        comment_form = CommentForm()
 
 
-    return render(request, 'detail.html', {'post_form': post_form, 'post': post})
+    return render(request, 'detail.html', {'post_form': post_form, 'post': post, 'comment_form':comment_form})
 
 
-def p_comment(request, pk):
+def p_comment(request, post_id, comment_post):
     print("pComment 들어왔다")
-    post = get_object_or_404(Post, pk=pk)
+    post = get_object_or_404(Post, pk=post_id)
+    comment = get_object_or_404(Post, pk=comment_post)
+
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
             comment.post = post
             comment.save()
-            return redirect('posts:detail', post_id=post.pk)
+            return redirect('posts:detail', post_id=post.post_id)
     else:
         form = CommentForm()
 
     print("pComment 그린다 ")
-    return render(request, 'p_comment.html', {'form': form})
+    return render(request, 'detail.html', {'form': form})
+
+
+
+def c_delete(request, comment_post):
+    comment = Comment.objects.get(id=comment_post) # id가 인자로 넘어온 id와 일치한 객체만 post에 넘겨줌
+    comment.delete()
+
+    return redirect('posts:detail')
 
 
 
