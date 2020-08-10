@@ -14,10 +14,18 @@
         </form>
 
         {% comment %}
-        <a href="{% url 'posts:send_comment' post_id comment_id %}" class="btn btn-primary">댓글쓰기</a>
+        <a href="{% url 'posts:send_comment' post.id %}" class="btn btn-primary">댓글쓰기</a>
         {% endcomment %}
 
 
+
+            <form action="{% url 'posts:send_comment' post.id %}" method="POST">
+         {% csrf_token %}
+         {% bootstrap_form comment_form %}
+            <!-- {{ post_form }} 그냥 쓰면 부트스트랩 적용이 안됨 -->
+            <!-- 부트스트랩 적용! -->
+        <button type="submit" class="btn btn-primary">댓글쓰기</button>
+    </form>
 
 
         <!--댓글-->
@@ -32,27 +40,27 @@
                 </tr>
             </thead>
             <tbody>
-                {% for comment in post.comment_set.all %}
+                {% for comment in post.comments.all %}
                 <tr>
                     <th scope="row">{{ comment.post }}</th>
                     <td>{{ comment.author }}</td>
                     <td>{{ comment.text }}</td>
-                    <td>
-<!--                        <a href="{% url 'posts:del_comment_detail' comment.post %}" class="btn btn-danger">삭제</a>-->
-                    </td>
+
                     <td>{{ comment.created_date }}</td>
                 </tr>
+            {% endfor %}
            </tbody>
         </table>
 
 
    </div>
 
-{% empty %}
-    <p>댓글이 없어용 :(</p>
-{% endfor %}
 
-{% bootstrap_form comment_form %}
+
+
+
+<!--<a href="{% url 'posts:send_comment' post.id %}" class="btn btn-primary" methods="POST">댓글쓰기</a>-->
+
 
 {% endblock %}
 

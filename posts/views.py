@@ -70,10 +70,12 @@ def p_update(request, post_id):
 
 
 def p_detail(request, post_id):
+    print("디테일함수 들어옴 ")
     post = get_object_or_404(Post, pk=post_id)
 
     if request.method == 'POST':
         post_form = PostForm(request.POST, instance=post)
+        print("디테일 포스트로 들어옴 ")
         # 사용자가 입력한 데이터가 다 들어있음.
         # instance = post 에 pk(id)도 들어있음.
         # 때문에 아래 save()에서 새로 저장하는 것이 아니라 수정이 되는 것
@@ -89,28 +91,37 @@ def p_detail(request, post_id):
         for i in post_form.fields: # 수정이 되지 않도록 처리
             post_form.fields[i].disabled = True
         comment_form = CommentForm()
+        print("디테일 엘스 들어옴 ")
 
 
     return render(request, 'detail.html', {'post_form': post_form, 'post': post, 'comment_form':comment_form})
 
 
-def p_comment(request, post_id, comment_post):
+def p_comment(request, post_id):
     print("pComment 들어왔다")
     post = get_object_or_404(Post, pk=post_id)
-    comment = get_object_or_404(Post, pk=comment_post)
+    # comment = get_object_or_404(Post, pk=comment_post)
 
     if request.method == "POST":
+        print("post 들어왔다 ")
         form = CommentForm(request.POST)
+        print(form)
+        if form.is_valid():
+            print("valid 들어왔다 ")
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.save()
+            return redirect('posts:detail', post_id=post_id)
+    else:
+        form = CommentForm(request.GET)
         if form.is_valid():
             comment = form.save(commit=False)
             comment.post = post
             comment.save()
-            return redirect('posts:detail', post_id=post.post_id)
-    else:
-        form = CommentForm()
+            return redirect('posts:detail', post_id=post_id)
 
     print("pComment 그린다 ")
-    return render(request, 'detail.html', {'form': form})
+    return redirect('posts:detail', post_id=post_id)#render(request, 'detail.html', {'post_form': post_form, 'post': post, 'comment_form':comment_form})
 
 
 
