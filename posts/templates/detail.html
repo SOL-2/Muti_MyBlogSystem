@@ -32,21 +32,26 @@
          <table class="table table-hover">
             <thead class="thead-dark">
                 <tr>
-                    <th scope="col">#</th>
                     <th scope="col">작성자</th>
                     <th scope="col">내용</th>
-                    <th scope="col">삭제</th>
                     <th scope="col">게시일</th>
+                    <th scope="col">삭제</th>
+
                 </tr>
             </thead>
             <tbody>
                 {% for comment in post.comments.all %}
                 <tr>
-                    <th scope="row">{{ comment.post }}</th>
                     <td>{{ comment.author }}</td>
                     <td>{{ comment.text }}</td>
-
                     <td>{{ comment.created_date }}</td>
+
+
+                    <td>
+                        <a href="{% url 'posts:del_comment_detail' post.pk comment.pk %}"
+                           class="btn btn-danger">삭제</a>
+                    </td>
+
                 </tr>
             {% endfor %}
            </tbody>

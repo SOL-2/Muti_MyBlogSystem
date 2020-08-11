@@ -111,6 +111,7 @@ def p_comment(request, post_id):
             comment = form.save(commit=False)
             comment.post = post
             comment.save()
+            print("comment pk: {}".format(comment.pk))
             return redirect('posts:detail', post_id=post_id)
     else:
         form = CommentForm(request.GET)
@@ -125,11 +126,11 @@ def p_comment(request, post_id):
 
 
 
-def c_delete(request, comment_post):
-    comment = Comment.objects.get(id=comment_post) # id가 인자로 넘어온 id와 일치한 객체만 post에 넘겨줌
+def c_delete(request, post_id,comment_id):
+    comment = get_object_or_404(Comment,pk=comment_id) # id가 인자로 넘어온 id와 일치한 객체만 post에 넘겨줌
     comment.delete()
 
-    return redirect('posts:detail')
+    return redirect('posts:detail',post_id=post_id)
 
 
 

@@ -13,7 +13,7 @@ urlpatterns = [
     path('<int:post_id>/update/', views.p_update, name='update'),
     path('<int:post_id>/detail/', views.p_detail, name='detail'),
     path('<int:post_id>/detail/sendcomment/', views.p_comment, name='send_comment'),
-   # path('<int:post_id>/detail/<int:comment_post>/delcomment/', views.c_delete, name='del_comment_detail'),
+    path('<int:post_id>/detail/delcomment/<int:comment_id>/', views.c_delete, name='del_comment_detail'),
 
 
 ]
